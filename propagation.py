@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # Tamanho da grade
-nx, ny = 100, 100
+nx, ny = 200, 200
 
 # Parâmetros físicos
 c = 1500.0
-dx = 1.0
-dt = 0.0001
+dx = 0.2
+dt = 0.00005
 
 # Estabilidade (CFL)
 if c * dt / dx > 1/np.sqrt(2):
@@ -27,7 +27,7 @@ def ricker(f, t):
     return (1 - 2*(np.pi*f*t)**2) * np.exp(-(np.pi*f*t)**2)
 
 f = 25
-nt = 500
+nt = 1000
 time = np.linspace(0, 0.1, nt)
 wavelet = ricker(f, time)
 
@@ -59,7 +59,9 @@ def update(frame):
     img.set_array(u)
     return [img]
 
-ani = FuncAnimation(fig, update, frames=300, interval=30)
+ani = FuncAnimation(fig, update, frames=10000, interval=1)
+
+
 
 plt.title("Onda 2D com fonte Ricker")
 plt.show()
