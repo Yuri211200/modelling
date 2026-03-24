@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # Tamanho da grade
-nx, ny = 200, 200
+nx, ny = 300, 300
 
 # Parâmetros físicos
-c = 1500.0
-dx = 0.2
-dt = 0.00005
+c = 250.0
+dx = 1
+dt = 0.001
 
 # Estabilidade (CFL)
 if c * dt / dx > 1/np.sqrt(2):
