@@ -22,25 +22,9 @@ f = 10
 alfa = 4
 NC = 0.4
 fmax = 3*f
-vp_min = 1000000
-vp_max = 0
-
-for i in vp:
-    for j in i:
-        if j < j+1:
-            vp_min=j
-        else:
-            pass
-
-for i in vp:
-    for j in i:
-        if j < j+1:
-            vp_max=j+1
-        else:
-            pass
+vp_min = np.min(vp)
+vp_max = np.max(vp)
 
 #Grid e dt
 dx = vp_min/(alfa * fmax)
-print(dx)
 dt = (NC * dx)/vp_max
-print(dt)
