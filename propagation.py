@@ -20,13 +20,13 @@ u_prev = np.zeros((nx, ny))
 u_next = np.zeros((nx, ny))
 
 # Fonte
-cx, cy = nx // 2, ny // 2
+cx, cy = 1, ny // 2
 
 # Wavelet de Ricker
 def ricker(f, t):
     return (1 - 2*(np.pi*f*t)**2) * np.exp(-(np.pi*f*t)**2)
 
-f = 25
+f = 15
 nt = 1000
 time = np.linspace(0, 0.1, nt)
 wavelet = ricker(f, time)
