@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Definição do Grid
-nz = np.zeros((1000))
-nx = np.zeros((2000))
+nz = 3000
+nx = 1500
 
 #Receptores e fonte
 fz,fx = (1, len(nx)/2)
@@ -19,21 +19,11 @@ wavelet = ricker(f, time)
 
 #Camadas
 v = [1500, 5000]
-espessuras = [500, 500]
 
-#camadas = np.zeros((len(nx), len(nz)))
+camadas = np.zeros((nz, nx))
+camadas[:nz//2, :] = v[0]
+camadas[nz//2:nz, :] = v[1]
 
-'''for i in range(len(nx)):
-    for j in range(len(nz)):
-        if i in range(espessuras[0]):  
-            camadas[i][j] = v[0]
-        else:
-            camadas[i][j] = v[1]'''
-
-camadas = np.zeros([len(nx), len(nz)])
-camadas[:len(nz/2), :] = v[0]
-camadas[len(nz/2):len(nz), :] = v[1]
-print(camadas)
 #Parâmetros
 dx = 1
 dt = 0.001
