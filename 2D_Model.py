@@ -2,11 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Definição do Grid
-nz = 3000
-nx = 1500
+nz = 500
+nx = 1000
 
 #Receptores e fonte
-fz,fx = (1, len(nx)/2)
+fz,fx = (1, nx//2)
 rz,rx = (1, nx)
 
 #Fonte Ricker
@@ -32,10 +32,10 @@ dt = 0.001
 def DF(u, u_prev, u_next, c, dt, dx, fx, fz, wavelet):
 
     # Propagação a partir da fonte    
-    u[fx, fz] += wavelet
+    u[fz, fx] += wavelet[t]
 
     # Atualização (vetorizada)
-    u_next[1:-1, 1:-1] = (2*u[1:-1, 1:-1] - u_prev[1:-1, 1:-1] + (c**2 * dt**2 / dx**2) * (
+    u_next[1:-1, 1:-1] = (2*u[1:-1, 1:-1] - u_prev[1:-1, 1:-1] + ((c[1:-1, 1:-1]**2)**2 * dt**2 / dx**2) * (
                 u[2:, 1:-1] + u[:-2, 1:-1] + u[1:-1, 2:] + u[1:-1, :-2] - 4*u[1:-1, 1:-1]))
 
     u_prev, u = u, u_next.copy()
@@ -43,11 +43,11 @@ def DF(u, u_prev, u_next, c, dt, dx, fx, fz, wavelet):
     return u
 
 # Snapshot no tempo escolhido
-snapshot = np.zeros((nt,nx,nz))
+snapshot = np.zeros((nt,nz,nx))
 
-u = np.zeros((nx, nz))
-u_prev = np.zeros((nx, nz))
-u_next = np.zeros((nx, nz))
+u = np.zeros((nz, nx))
+u_prev = np.zeros((nz, nx))
+u_next = np.zeros((nz, nx))
 
 for t in range(nt):
     
@@ -59,18 +59,25 @@ for t in range(nt):
 
 #Plot do snapshot
 
-def save_snapshot(last,step, t):        
-        
-        if t > last:
-             return
-        if t % step != 0:
-            return
+def plot_snapshot(snapshot, t, step):
+    
+    if t >= snapshot.shape[0]:
+        print("Tempo fora do range")
+        return
+    
+    if t % step != 0:
+        return
 
-        snapshot = snapshot[N_abc:nz_abc - N_abc, N_abc:nx_abc - N_abc]
-        
-        plt.figure(figsize=(8,8))
-        plt.imshow(snapshot)
-        plt.show()
+    plt.figure(figsize=(8,6))
+    plt.imshow(snapshot[t, :, :], cmap='seismic', aspect='auto')
+    plt.colorbar(label='Amplitude')
+    plt.title(f"Snapshot no tempo t = {t}")
+    plt.xlabel("x")
+    plt.ylabel("z")
+    plt.gca().invert_yaxis()
+    plt.show()
 
-last = range(nt)
-step = 100
+step = 10
+t = 600
+
+plot_snapshot(snapshot, t, step)
