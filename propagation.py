@@ -44,14 +44,9 @@ def update(frame):
         u[cx, cy] += wavelet[frame]
 
     # Atualização (vetorizada)
-    u_next[1:-1, 1:-1] = (
-        2*u[1:-1, 1:-1] - u_prev[1:-1, 1:-1] +
-        (c**2 * dt**2 / dx**2) * (
-            u[2:, 1:-1] + u[:-2, 1:-1] +
-            u[1:-1, 2:] + u[1:-1, :-2] -
-            4*u[1:-1, 1:-1]
-        )
-    )
+    u_next[1:-1, 1:-1] = (2*u[1:-1, 1:-1] - u_prev[1:-1, 1:-1] +
+        (c**2 * dt**2 / dx**2) * (u[2:, 1:-1] + u[:-2, 1:-1] +
+            u[1:-1, 2:] + u[1:-1, :-2] - 4*u[1:-1, 1:-1]))
 
     # Atualiza estados
     u_prev, u = u, u_next.copy()
