@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numba import njit, prange
-from matplotlib.animation import FuncAnimation
 
 #Definição do Grid
 nz = 301
@@ -19,7 +18,7 @@ def ricker(f, t):
     return (1 - 2*(np.pi*f*t)**2) * np.exp(-(np.pi*f*t)**2)
 
 f = 10
-nt = 4000
+nt = 5000
 time = np.linspace(0, 2, nt)
 wavelet = ricker(f, time)
 
@@ -27,7 +26,7 @@ plt.plot(wavelet)
 plt.show()
 
 #Camadas
-v = [1500, 5000]
+v = [1500, 2000]
 
 camadas = np.zeros((nz, nx))
 camadas[:nz//2, :] = v[0]
@@ -37,11 +36,12 @@ plt.figure()
 plt.imshow(camadas)
 plt.scatter(rx, rz, label = "receptor")
 plt.scatter(fx, fz, label = "fonte", color='r')
-# plt.show()
+plt.show()
+
 #Parâmetros
 dx = 10
 dz = 10
-dt = 0.0005
+dt = 0.001
 
 # Snapshot no tempo escolhido
 snapshot = np.zeros((nt,nz,nx))
@@ -55,21 +55,22 @@ u_next = np.zeros((nz, nx))
 # plt.colorbar(img)
 
 #Diferenças Finitas
-@jit(nopython=True, parallel=True)
+@njit(nopython=True, parallel=True)
 def DF(u, nx, nz, dx, dz):
-    c0 = -1435.0 / 504.0
-    c1 = 8.0 / 5.0
-    c2 = -1.0 / 5.0
-    c3 = 8.0 / 315.0
-    c4 = -1.0 / 560.0
+    laplacian = np.zeros_like(u)
+    c0 = -14350 / 5040
+    c1 = 8064 / 5040
+    c2 = -1008.0 / 5040
+    c3 = 128.0 / 5040
+    c4 = -9.0 / 5040
     for i in prange(4,nx-4):
         for j in prange(4,nz-4):
             pxx = (c0 * u[j, i] + c1 * (u[j, i+1] + u[j, i-1]) + c2 * (u[j, i+2] + u[j, i-2]) + c3 * (u[j, i+3] + u[j, i-3]) +c4 * (u[j, i+4] + u[j, i-4])) / (dx * dx)
             pzz = (c0 * u[j, i] + c1 * (u[j+1, i] + u[j-1, i]) + c2 * (u[j+2, i] + u[j-2, i]) + c3 * (u[j+3, i] + u[j-3, i]) + c4 * (u[j+4, i] + u[j-4, i])) / (dz * dz)
-            
+            laplacian[j, i] = pxx + pzz
     # img.set_array(u)
     
-    laplacian = pxx + pzz
+    #laplacian = pxx + pzz
 
     return laplacian #, [img]
 
@@ -77,39 +78,21 @@ for t in range(nt):
     # Propagação a partir da fonte    
     u[fz, fx] += wavelet[t]
     laplacian = DF(u, nx, nz, dx, dz)
-    u_prev = (camadas ** 2) * (dt ** 2) * laplacian + 2 * u - u_next
-    #snapshot[t, :, :] = u
+    u_next = 2*u - u_prev + (camadas**2)*(dt**2)*laplacian
+    #u_prev = (camadas ** 2) * (dt ** 2) * laplacian + 2 * u - u_next
+    snapshot[t, :, :] = u
 
     if t % 300 == 0:
         plt.imshow(u)
         plt.show()
 
     # Atualiza estados
-    u_next = u
-    u = u_prev
+    u_prev = u
+    u = u_next
 
-#Plot do snapshot
-
-def plot_snapshot(snapshot, t, step):     
-    # if t % step != 0:
-    #     return
-
-    plt.figure(figsize=(8,6))
-    plt.imshow(snapshot[t, :, :], cmap='seismic', aspect='auto')
-    plt.colorbar(label='Amplitude')
-    plt.title(f"Snapshot no tempo t = {t}")
-    plt.xlabel("x")
-    plt.ylabel("z")
-    plt.gca().invert_yaxis()
-    plt.show()
-
-step = 200
-t = 2000
-
-plot_snapshot(snapshot, t, step)
 
 # ani = FuncAnimation(fig, DF, frames=10000, interval=200)
-
+"""
 @njit(parallel=True, fastmath=True)
 def _forward_kernel(
   upas: np.ndarray,
@@ -153,3 +136,4 @@ def _forward_kernel(
 
       ufut[i, j] = upre[i, j]
       upre[i, j] = upas[i, j]
+"""
