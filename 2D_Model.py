@@ -19,6 +19,7 @@ def ricker(f, t):
 
 f = 10
 nt = 2500
+nt = 2500
 time = np.linspace(0, 2, nt)
 wavelet = ricker(f, time)
 
@@ -74,7 +75,7 @@ for t in range(nt):
     u_next = 2*u - u_prev + (camadas**2)*(dt**2)*laplacian
     snapshot[t, :, :] = u
 
-    if t % 200 == 0:
+    if t > 250 and t % 250 == 0:
         plt.imshow(u)
         plt.show()
 
