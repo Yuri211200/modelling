@@ -9,7 +9,7 @@ nx = 301
 #Receptores e fonte
 fz = 1
 fx = nx//2
-rz = np.full(nx,1)
+rz = np.ones(nx)
 rx = np.arange(0,nx)
 
 #Fonte Ricker
@@ -18,7 +18,7 @@ def ricker(f, t):
     return (1 - 2*(np.pi*f*t)**2) * np.exp(-(np.pi*f*t)**2)
 
 f = 10
-nt = 5000
+nt = 2500
 time = np.linspace(0, 2, nt)
 wavelet = ricker(f, time)
 
@@ -61,20 +61,20 @@ def DF(u, nx, nz, dx, dz):
     c4 = -9.0 / 5040
     for i in prange(4,nx-4):
         for j in prange(4,nz-4):
-            pxx = (c0 * u[j, i] + c1 * (u[j, i+1] + u[j, i-1]) + c2 * (u[j, i+2] + u[j, i-2]) + c3 * (u[j, i+3] + u[j, i-3]) +c4 * (u[j, i+4] + u[j, i-4])) / (dx * dx)
+            pxx = (c0 * u[j, i] + c1 * (u[j, i+1] + u[j, i-1]) + c2 * (u[j, i+2] + u[j, i-2]) + c3 * (u[j, i+3] + u[j, i-3]) + c4 * (u[j, i+4] + u[j, i-4])) / (dx * dx)
             pzz = (c0 * u[j, i] + c1 * (u[j+1, i] + u[j-1, i]) + c2 * (u[j+2, i] + u[j-2, i]) + c3 * (u[j+3, i] + u[j-3, i]) + c4 * (u[j+4, i] + u[j-4, i])) / (dz * dz)
             laplacian[j, i] = pxx + pzz
 
     return laplacian 
 
-# Propagação a partir da fonte    
+# Propagação a partir da fonte + plot   
 for t in range(nt):
     u[fz, fx] += wavelet[t]
     laplacian = DF(u, nx, nz, dx, dz)
     u_next = 2*u - u_prev + (camadas**2)*(dt**2)*laplacian
     snapshot[t, :, :] = u
 
-    if t % 100 == 0:
+    if t % 200 == 0:
         plt.imshow(u)
         plt.show()
 
