@@ -26,13 +26,26 @@ wavelet = ricker(f, time)
 plt.plot(wavelet)
 plt.show()
 
+#Função para criar uma elipse
+def create_ellipse(center, a, b):
+    y, x = np.ogrid[-center[0]:nz-center[0], -center[1]:nx-center[1]]
+    elipse = ((x**2)/a**2) + (y**2/b**2) <= 1
+    return elipse
+
+ellipse = create_ellipse((155, 150), 125, 5)
+
 #Camadas
-v = [1000, 2500]
+v = [1500, 2500, 500]
 
 camadas = np.zeros((nz, nx))
 camadas[:nz//2, :] = v[0]
 camadas[nz//2:nz, :] = v[1]
 
+#Atribuindo valores anomalos na região da elipse
+for i in range(nz):
+    for j in range(nx):
+        if ellipse[i, j]:
+            camadas[i, j] = v[2]
 plt.figure()
 plt.imshow(camadas)
 plt.scatter(rx, rz, label = "receptor")
@@ -75,7 +88,7 @@ for t in range(nt):
     u_next = 2*u - u_prev + (camadas**2)*(dt**2)*laplacian
     snapshot[t, :, :] = u
 
-    if t > 250 and t % 250 == 0:
+    if t > 75 and t % 75 == 0:
         plt.imshow(u)
         plt.show()
 
