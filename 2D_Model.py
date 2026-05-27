@@ -42,15 +42,18 @@ camadas[:nz//2, :] = v[0]
 camadas[nz//2:nz, :] = v[1]
 
 #Atribuindo valores anomalos na região da elipse e plot do modelo
-for i in range(nz):
-    for j in range(nx):
-        if elipse[i, j]:
-            camadas[i, j] = v[2]
+#for i in range(nz):
+#    for j in range(nx):
+#        if elipse[i, j]:
+#            camadas[i, j] = v[2]
 
-plt.figure()
-plt.imshow(camadas)
+fig, ax = plt.subplots(figsize=(10,6))
+img = ax.imshow(camadas, aspect='auto', cmap='jet')
+cbar = plt.colorbar(img, ax=ax)
+cbar.set_label('Velocidade (m/s)')
 plt.scatter(rx, rz, label = "receptor")
 plt.scatter(fx, fz, label = "fonte", color='r')
+plt.legend()
 plt.show()
 
 #Parâmetros
