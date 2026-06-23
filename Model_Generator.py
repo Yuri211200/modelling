@@ -6,9 +6,10 @@ nx = 1500
 
 # Modelo de 3 camadas
 camadas = np.zeros((nz, nx))
-camadas[:nz//3, :] = 1500
-camadas[nz//3:2*nz//3, :] = 2250
-camadas[2*nz//3:, :] = 2700
+camadas[:1000, :] = 1500
+camadas[500:1000, :] = 3000
+camadas[1000:2500, :] = 4500
+camadas[2500:, :] = 5500
 
 # Parâmetros da falha
 x0 = 500
@@ -34,10 +35,16 @@ mask = ((X >= 0) & (X < nx) &
 
 camadas[mask] = camadas[Z[mask], X[mask]]
 
+camadas[500:1000, :] = 3000
+
 # Visualização
-plt.figure(figsize=(10, 6))
-img = plt.imshow(camadas[:, int(dx):], aspect='auto', cmap='jet')
-plt.colorbar(img, label='Vp (m/s)')
+plt.figure(figsize=(12, 6))
+img = plt.imshow(camadas[:, int(dx):],vmax=6000, aspect='auto', cmap='jet')
+cbar = plt.colorbar(img)
+cbar.ax.invert_yaxis()
+cbar.ax.set_title('Vp (m/s)', pad=20)
+cbar.set_ticks([1500,3000, 4500, 5500])
+cbar.set_ticklabels(['Camada 1 = 1500m/s','Camada 2 = 3000m/s','Camada 3 = 4500m/s','Camada 4 = 5500m/s'])
 plt.title('Modelo com Falha Normal')
 plt.xlabel('distância (m)')
 plt.ylabel('profundidade (m)')
