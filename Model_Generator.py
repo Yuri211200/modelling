@@ -49,3 +49,11 @@ plt.title('Modelo com Falha Normal')
 plt.xlabel('distância (m)')
 plt.ylabel('profundidade (m)')
 plt.show()
+
+camadas.flatten(order="F").tofile("Vp_camadas_{nz}x{nx}.bin")
+
+def import_float32(filename,ncol,nlin):
+    data = np.fromfile(filename,dtype=np.float32)
+    data = data.reshape((ncol,nlin),order="F")
+    return data
+

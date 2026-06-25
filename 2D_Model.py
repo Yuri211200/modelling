@@ -9,7 +9,7 @@ nx = 301
 #Receptores e fonte
 fz = 1
 fx = nx//2
-rz = np.ones(nx)
+rz = np.full(nx,1)
 rx = np.arange(0,nx)
 
 #Fonte Ricker
@@ -19,41 +19,23 @@ def ricker(f, t):
 
 f = 10
 nt = 2500
-nt = 2500
 time = np.linspace(0, 2, nt)
 wavelet = ricker(f, time)
 
 plt.plot(wavelet)
 plt.show()
 
-#Função para criar uma elipse
-def create_elipse(center, a, b):
-    y, x = np.ogrid[-center[0]:nz-center[0], -center[1]:nx-center[1]]
-    elipse = ((x**2)/a**2) + (y**2/b**2) <= 1
-    return elipse
-
-elipse = create_elipse((155, 150), 125, 5)
-
 #Camadas
-v = [1500, 2500, 500]
+v = [1000, 2500]
 
 camadas = np.zeros((nz, nx))
 camadas[:nz//2, :] = v[0]
 camadas[nz//2:nz, :] = v[1]
 
-#Atribuindo valores anomalos na região da elipse e plot do modelo
-#for i in range(nz):
-#    for j in range(nx):
-#        if elipse[i, j]:
-#            camadas[i, j] = v[2]
-
-fig, ax = plt.subplots(figsize=(10,6))
-img = ax.imshow(camadas, aspect='auto', cmap='jet')
-cbar = plt.colorbar(img, ax=ax)
-cbar.set_label('Velocidade (m/s)')
+plt.figure()
+plt.imshow(camadas)
 plt.scatter(rx, rz, label = "receptor")
 plt.scatter(fx, fz, label = "fonte", color='r')
-plt.legend()
 plt.show()
 
 #Parâmetros
@@ -79,20 +61,23 @@ def DF(u, nx, nz, dx, dz):
     c4 = -9.0 / 5040
     for i in prange(4,nx-4):
         for j in prange(4,nz-4):
-            pxx = (c0 * u[j, i] + c1 * (u[j, i+1] + u[j, i-1]) + c2 * (u[j, i+2] + u[j, i-2]) + c3 * (u[j, i+3] + u[j, i-3]) + c4 * (u[j, i+4] + u[j, i-4])) / (dx * dx)
+            pxx = (c0 * u[j, i] + c1 * (u[j, i+1] + u[j, i-1]) + c2 * (u[j, i+2] + u[j, i-2]) + c3 * (u[j, i+3] + u[j, i-3]) +c4 * (u[j, i+4] + u[j, i-4])) / (dx * dx)
             pzz = (c0 * u[j, i] + c1 * (u[j+1, i] + u[j-1, i]) + c2 * (u[j+2, i] + u[j-2, i]) + c3 * (u[j+3, i] + u[j-3, i]) + c4 * (u[j+4, i] + u[j-4, i])) / (dz * dz)
             laplacian[j, i] = pxx + pzz
 
     return laplacian 
 
-# Propagação a partir da fonte + plot   
+# Bordas Absorssivas
+
+
+# Propagação a partir da fonte    
 for t in range(nt):
     u[fz, fx] += wavelet[t]
     laplacian = DF(u, nx, nz, dx, dz)
     u_next = 2*u - u_prev + (camadas**2)*(dt**2)*laplacian
     snapshot[t, :, :] = u
 
-    if t > 75 and t % 75 == 0:
+    if t > 250 and t % 250 == 0:
         plt.imshow(u)
         plt.show()
 
