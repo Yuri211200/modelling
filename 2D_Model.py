@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from numba import njit, prange
 
 #Definição do Grid
-nz = 301
-nx = 301
+nz = 300
+nx = 150
 
 #Receptores e fonte
 fz = 1
@@ -26,14 +26,27 @@ plt.plot(wavelet)
 plt.show()
 
 #Camadas
-v = [1000, 2500]
+def import_float32(filename,ncol,nlin):
+    data = np.fromfile(filename,dtype=np.float32)
+    data = data.reshape((ncol,nlin))
+    return data
 
-camadas = np.zeros((nz, nx))
-camadas[:nz//2, :] = v[0]
-camadas[nz//2:nz, :] = v[1]
+modelo = True
+
+if modelo == True:
+    camadas = import_float32("Vp_camadas_300x150.bin", nz, nx)
+    print(camadas.shape, camadas.size)
+else:
+    print("Gerando modelo de duas camadas")
+
+    v = [1000, 2500]
+    camadas = np.zeros((nz, nx))
+    camadas[:nz//2, :] = v[0]
+    camadas[nz//2:nz, :] = v[1]
 
 plt.figure()
-plt.imshow(camadas)
+img = plt.imshow(camadas, aspect='auto', cmap='jet')
+cbar = plt.colorbar(img)
 plt.scatter(rx, rz, label = "receptor")
 plt.scatter(fx, fz, label = "fonte", color='r')
 plt.show()
@@ -77,8 +90,8 @@ for t in range(nt):
     u_next = 2*u - u_prev + (camadas**2)*(dt**2)*laplacian
     snapshot[t, :, :] = u
 
-    if t > 250 and t % 250 == 0:
-        plt.imshow(u)
+    if t > 100 and t % 100 == 0:
+        plt.imshow(u, cmap='gray')
         plt.show()
 
     # Atualiza estados

@@ -1,20 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-nz = 3000
-nx = 1500
+nz = 300
+nx = 150
 
 # Modelo de 3 camadas
 camadas = np.zeros((nz, nx))
-camadas[:1000, :] = 1500
-camadas[500:1000, :] = 3000
-camadas[1000:2500, :] = 4500
-camadas[2500:, :] = 5500
+camadas[:50, :] = 1500
+camadas[50:100, :] = 3000
+camadas[100:250, :] = 4500
+camadas[250:, :] = 5500
 
 # Parâmetros da falha
-x0 = 500
+x0 = 45
 m = 5
-D = 300  # rejeito ao longo da falha
+D = 30  # rejeito ao longo da falha
 
 # Vetor unitário paralelo à falha
 tx = 1 / np.sqrt(1 + m**2)
@@ -35,7 +35,7 @@ mask = ((X >= 0) & (X < nx) &
 
 camadas[mask] = camadas[Z[mask], X[mask]]
 
-camadas[500:1000, :] = 3000
+camadas[50:80, :] = 3000
 
 # Visualização
 plt.figure(figsize=(12, 6))
@@ -50,10 +50,18 @@ plt.xlabel('distância (m)')
 plt.ylabel('profundidade (m)')
 plt.show()
 
-camadas.flatten(order="F").tofile("Vp_camadas_{nz}x{nx}.bin")
+
+print(camadas.shape, camadas.size)
+camadas.flatten(order='C').tofile(f"Vp_camadas_{nz}x{nx}.bin")
 
 def import_float32(filename,ncol,nlin):
     data = np.fromfile(filename,dtype=np.float32)
-    data = data.reshape((ncol,nlin),order="F")
+    data = data.reshape((ncol,nlin))
     return data
 
+modelo = import_float32("Vp_camadas_300x150.bin", nz, 300)
+
+plt.figure()
+img = plt.imshow(modelo, aspect='auto', cmap='jet')
+cbar = plt.colorbar(img)
+plt.show()
