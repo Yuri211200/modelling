@@ -5,7 +5,7 @@ nz = 300
 nx = 150
 
 # Modelo de 3 camadas
-camadas = np.zeros((nz, nx))
+camadas = np.zeros((nz, nx),dtype=np.float32)
 camadas[:50, :] = 1500
 camadas[50:100, :] = 3000
 camadas[100:250, :] = 4500
@@ -50,18 +50,4 @@ plt.xlabel('distância (m)')
 plt.ylabel('profundidade (m)')
 plt.show()
 
-
-print(camadas.shape, camadas.size)
-camadas.flatten(order='C').tofile(f"Vp_camadas_{nz}x{nx}.bin")
-
-def import_float32(filename,ncol,nlin):
-    data = np.fromfile(filename,dtype=np.float32)
-    data = data.reshape((ncol,nlin))
-    return data
-
-modelo = import_float32("Vp_camadas_300x150.bin", nz, 300)
-
-plt.figure()
-img = plt.imshow(modelo, aspect='auto', cmap='jet')
-cbar = plt.colorbar(img)
-plt.show()
+camadas.tofile(f"Vp_camadas_{nz}x{nx}.bin")
