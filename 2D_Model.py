@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from numba import njit, prange
 
 #Definição do Grid
-nz = 300
-nx = 150
+nz = 351
+nx = 501
 
 #Receptores e fonte
 fz = 1
@@ -34,7 +34,7 @@ def import_float32(filename,ncol,nlin):
 modelo = True
 
 if modelo == True:
-    camadas = import_float32("Vp_camadas_300x150.bin", nz, nx)
+    camadas = import_float32("Vp_camadas_351x501.bin", nz, nx)
     print(camadas.shape, camadas.size)
 else:
     print("Gerando modelo de duas camadas")
@@ -91,7 +91,7 @@ for t in range(nt):
     snapshot[t, :, :] = u
 
     if t > 100 and t % 100 == 0:
-        plt.imshow(u, cmap='gray')
+        plt.imshow(u, cmap='gray', aspect='auto')
         plt.show()
 
     # Atualiza estados
